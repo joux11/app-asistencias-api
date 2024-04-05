@@ -14,6 +14,8 @@ $user = new UsuarioController();
 $child = new ChildController();
 $asistencia = new AsistenciaController();
 $asistenciaN = new AsistenciaNController();
+$aulas = new AulaController();
+$asignacion = new AsignacionAulasController();
 
 
 $recovery = new RecoveryDatabase();
@@ -32,12 +34,29 @@ if (isset($_POST['accion'])) {
         $response = $user->getAllById();
         echo json_encode($response);
     }
+    if ($_POST['accion'] == "getUsersNoAsignado") {
+        $response = $user->getUserNoAsignado();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "getAllUsers") {
+        $response = $user->getAllUsers();
+        echo json_encode($response);
+    }
+
+    if ($_POST['accion'] == "updateEstado") {
+        $response = $user->updateEstado();
+        echo json_encode($response);
+    }
 
 
     /* child */
 
     if ($_POST['accion'] == "getAllChildren") {
         $response = $child->getAllChildren();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "getAllChildrenByAula") {
+        $response = $child->getAllChildrenByAula();
         echo json_encode($response);
     }
 
@@ -99,6 +118,38 @@ if (isset($_POST['accion'])) {
         $response = $asistencia->updateAsistencia();
         echo json_encode($response);
     }
+
+    /*Aulas */
+    if ($_POST['accion'] == "getAllAulas") {
+        $response = $aulas->getAllAulas();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "getAulasNoAsignadas") {
+        $response = $aulas->getAulasNoAsignadas();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "createAula") {
+
+        $response = $aulas->createAula();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "deleteAula") {
+
+        $response = $aulas->deleteAula();
+        echo json_encode($response);
+    }
+
+    /* ASIGNACION A AULAS */
+    if ($_POST['accion'] == "getAllAsignaciones") {
+        $response = $asignacion->getAllAsignaciones();
+        echo json_encode($response);
+    }
+    if ($_POST['accion'] == "createAsignacion") {
+
+        $response = $asignacion->createAsignacion();
+        echo json_encode($response);
+    }
+
 
     /* backup base de datos */
     if ($_POST['accion'] == "backup") {

@@ -88,17 +88,16 @@ class AsistenciaNModel extends Database
         }
     }
 
-    public function create($fechaMarcacion, $horaEntrada, $estado, $observacion_entrada, $usuarioId, $niñoId)
+    public function create($fechaMarcacion, $horaEntrada, $estado, $observacion_entrada, $niñoId)
     {
         try {
             $pdo = self::connect();
-            $stmt = $pdo->prepare("INSERT INTO asistencia_niños(fecha_marcacion, hora_entrada,  estado, observacion_entrada, usuario_id, niño_id) VALUES (:fechaMarcacion, :horaEntrada, :estado, :observacion_entrada, :usuarioId, :nId)");
+            $stmt = $pdo->prepare("INSERT INTO asistencia_niños(fecha_marcacion, hora_entrada,  estado, observacion_entrada, niño_id) VALUES (:fechaMarcacion, :horaEntrada, :estado, :observacion_entrada, :nId)");
 
             $stmt->bindParam(':fechaMarcacion', $fechaMarcacion, PDO::PARAM_STR);
             $stmt->bindParam(':horaEntrada', $horaEntrada, PDO::PARAM_STR);
             $stmt->bindParam(':estado', $estado, PDO::PARAM_STR);
             $stmt->bindParam(':observacion_entrada', $observacion_entrada, PDO::PARAM_STR);
-            $stmt->bindParam(':usuarioId', $usuarioId, PDO::PARAM_INT);
             $stmt->bindParam(':nId', $niñoId, PDO::PARAM_INT);
 
             $stmt->execute();

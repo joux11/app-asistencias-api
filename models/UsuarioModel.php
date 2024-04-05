@@ -4,6 +4,41 @@ require_once '../config/database.php';
 
 class UsuarioModel extends Database
 {
+    public function getAll()
+    {
+        try {
+            $pdo = self::connect();
+            $stmt = $pdo->prepare("SELECT * FROM usuarios");
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
+    public function getUserNoAsignado()
+    {
+        try {
+            $pdo = self::connect();
+            $stmt = $pdo->query("SELECT usuarios.id, usuarios.primer_nombre, usuarios.primer_apellido FROM usuarios LEFT JOIN aula_usuario ON usuarios.id = aula_usuario.usuario_id WHERE aula_usuario.usuario_id IS NULL;");
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
     public function getUserById($id)
     {
         try {
@@ -29,8 +64,27 @@ class UsuarioModel extends Database
     {
         try {
             $pdo = self::connect();
-            $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email LIKE :email");
+            $stmt = $pdo->prepare("SELECT * FROM usuarios  WHERE email LIKE :email");
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
+    public function getById($id)
+    {
+        try {
+            $pdo = self::connect();
+            $stmt = $pdo->prepare("SELECT u.*, au.aula_id FROM usuarios AS u JOIN aula_usuario AS au ON u.id = au.usuario_id WHERE u.id = :id");
+            $stmt->bindParam(':id', $id, PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
             $stmt->closeCursor();
@@ -108,6 +162,28 @@ class UsuarioModel extends Database
             $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id = :id");
 
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+            $res = $stmt->execute();
+        } catch (PDOException $e) {
+            throw new Exception('Error al ejecutar la consulta: ' . $e->getMessage());
+        }
+
+        $stmt->closeCursor();
+        $pdo = null;
+
+        return $res;
+    }
+
+    public function updateEstado($estado, $id)
+    {
+
+        try {
+            $pdo = self::connect();
+
+            $stmt = $pdo->prepare("UPDATE usuarios SET estado = :nuevoEstado WHERE id = :usuarioId;");
+
+            $stmt->bindParam(':nuevoEstado', $estado, PDO::PARAM_INT);
+            $stmt->bindParam(':usuarioId', $id, PDO::PARAM_INT);
 
             $res = $stmt->execute();
         } catch (PDOException $e) {

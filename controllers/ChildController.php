@@ -18,6 +18,22 @@ class ChildController
             return [];
         }
     }
+    public function getAllChildrenByAula()
+    {
+        $childModel = new ChildModel();
+
+        try {
+            $children = $childModel->getAllByAula($_POST['aula_id']);
+            if (empty($children)) {
+                return [];
+            } else {
+                return $children;
+            }
+        } catch (Exception $e) {
+            error_log("Error en ChildController::getAllChildren: " . $e->getMessage());
+            return [];
+        }
+    }
     public function getChildById()
     {
         $childModel = new ChildModel();
@@ -40,10 +56,11 @@ class ChildController
 
         try {
             $child = $childModel->getByCedula($_POST['identificacion']);
-            if ($child !== null) {
+
+            if (!empty($child)) {
                 return array('status' => false, 'msg' => 'Ya existe un registro con la cédula ' . $_POST['identificacion']);
             }
-            $childModel->create($_POST['identificacion'], $_POST['primer_nombre'], $_POST['segundo_nombre'], $_POST['primer_apellido'], $_POST['segundo_apellido'], $_POST['fecha_nacimiento'], $_POST['genero']);
+            $childModel->create($_POST['identificacion'], $_POST['primer_nombre'], $_POST['segundo_nombre'], $_POST['primer_apellido'], $_POST['segundo_apellido'], $_POST['fecha_nacimiento'], $_POST['genero'], $_POST['aula_id']);
             return array('status' => true, 'msg' => 'Registro creado');
         } catch (Exception $e) {
             error_log("Error en ChildController::createChild: " . $e->getMessage());

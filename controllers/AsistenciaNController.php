@@ -21,6 +21,7 @@ class AsistenciaNController
         }
     }
 
+
     public function getAsistenciaNById($id)
     {
         $asistenciaNModel = new AsistenciaNModel();
@@ -78,7 +79,7 @@ class AsistenciaNController
         $asistenciaNModel = new AsistenciaNModel();
 
         try {
-            $success = $asistenciaNModel->create($_POST['fecha_marcacion'], $_POST['hora_entrada'], $_POST['estado'], $_POST['observacion_entrada'], $_POST['usuario_id'], $_POST['niño_id']);
+            $success = $asistenciaNModel->create($_POST['fecha_marcacion'], $_POST['hora_entrada'], $_POST['estado'], $_POST['observacion_entrada'], $_POST['niño_id']);
             return array('status' => true, 'msg' => 'Asistencia registrada');
         } catch (Exception $e) {
             error_log("Error en AsistenciaNiñosController::createAsistenciaNiño: " . $e->getMessage());

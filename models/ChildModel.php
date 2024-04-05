@@ -21,6 +21,28 @@ class ChildModel extends Database
             return null;
         }
     }
+    public function getAllByAula($aulaId)
+    {
+        try {
+
+
+            $pdo = self::connect();
+            $stmt = $pdo->prepare("SELECT * FROM niños WHERE aula_id = :aulaid ORDER BY primer_apellido ASC");
+            $stmt->bindParam(':aulaid', $aulaId, PDO::PARAM_INT);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
 
     public function getById($id)
     {
@@ -60,12 +82,12 @@ class ChildModel extends Database
             return null;
         }
     }
-    public function create($identificacion, $primerNombre, $segundoNombre, $primerApellido, $segundoApellido, $fechaNacimiento, $genero)
+    public function create($identificacion, $primerNombre, $segundoNombre, $primerApellido, $segundoApellido, $fechaNacimiento, $genero, $aula_id)
     {
         try {
             $pdo = self::connect();
 
-            $stmt = $pdo->prepare("INSERT INTO niños (identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, genero) VALUES (:identificacion, :primerNombre, :segundoNombre, :primerApellido, :segundoApellido, :fechaNacimiento, :genero)");
+            $stmt = $pdo->prepare("INSERT INTO niños (identificacion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, fecha_nacimiento, genero, aula_id) VALUES (:identificacion, :primerNombre, :segundoNombre, :primerApellido, :segundoApellido, :fechaNacimiento, :genero, :aula_id)");
 
             $stmt->bindParam(':identificacion', $identificacion, PDO::PARAM_STR);
             $stmt->bindParam(':primerNombre', $primerNombre, PDO::PARAM_STR);
@@ -74,6 +96,7 @@ class ChildModel extends Database
             $stmt->bindParam(':segundoApellido', $segundoApellido, PDO::PARAM_STR);
             $stmt->bindParam(':fechaNacimiento', $fechaNacimiento, PDO::PARAM_STR);
             $stmt->bindParam(':genero', $genero, PDO::PARAM_STR);
+            $stmt->bindParam(':aula_id', $aula_id, PDO::PARAM_INT);
 
             $stmt->execute();
         } catch (PDOException $e) {
