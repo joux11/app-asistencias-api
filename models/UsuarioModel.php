@@ -22,7 +22,7 @@ class UsuarioModel extends Database
             return null;
         }
     }
-    public function getUserNoAsignado()
+    public function getUsersNoAsignado()
     {
         try {
             $pdo = self::connect();
@@ -34,6 +34,25 @@ class UsuarioModel extends Database
         } catch (PDOException $e) {
             error_log("Database error: " . $e->getMessage());
             return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
+    public function getUserNoAsignado($userId)
+    {
+        try {
+            $pdo = self::connect();
+            $stmt = $pdo->prepare("SELECT usuarios.id, usuarios.primer_nombre, usuarios.primer_apellido FROM usuarios LEFT JOIN aula_usuario ON usuarios.id = aula_usuario.usuario_id WHERE aula_usuario.usuario_id IS NULL and usuarios.id = :userId");
+            $stmt->bindParam(':userId', $userId, PDO::PARAM_INT);
+            $stmt->execute();
+            $res = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return $e;
         } catch (Exception $e) {
             error_log("Error: " . $e->getMessage());
             return null;
@@ -66,6 +85,25 @@ class UsuarioModel extends Database
             $pdo = self::connect();
             $stmt = $pdo->prepare("SELECT * FROM usuarios  WHERE email LIKE :email");
             $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            $res = $stmt->fetch(PDO::FETCH_ASSOC);
+            $stmt->closeCursor();
+            $pdo = null;
+            return $res;
+        } catch (PDOException $e) {
+            error_log("Database error: " . $e->getMessage());
+            return null;
+        } catch (Exception $e) {
+            error_log("Error: " . $e->getMessage());
+            return null;
+        }
+    }
+    public function getUserbyCedula($cedula)
+    {
+        try {
+            $pdo = self::connect();
+            $stmt = $pdo->prepare("SELECT * FROM usuarios  WHERE identificacion LIKE :cedula");
+            $stmt->bindParam(':cedula', $cedula, PDO::PARAM_STR);
             $stmt->execute();
             $res = $stmt->fetch(PDO::FETCH_ASSOC);
             $stmt->closeCursor();

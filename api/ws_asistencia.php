@@ -35,7 +35,7 @@ if (isset($_POST['accion'])) {
         echo json_encode($response);
     }
     if ($_POST['accion'] == "getUsersNoAsignado") {
-        $response = $user->getUserNoAsignado();
+        $response = $user->getUsersNoAsignado();
         echo json_encode($response);
     }
     if ($_POST['accion'] == "getAllUsers") {

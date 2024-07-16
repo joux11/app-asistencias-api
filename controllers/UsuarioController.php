@@ -21,10 +21,10 @@ class UsuarioController
         if ($user['estado'] == "0") {
             return array('status' => false, 'msg' => 'El usuario no esta activo');
         }
+        if (!empty($usuarioModel->getUserNoAsignado($user['id']))) {
+            return array('status' => false, 'msg' => 'El usuario no ha sido asignado a ninguna aula');
+        }
         $userExist = $usuarioModel->getById($user['id']);
-
-
-
         if ($userExist && $hashedPassword == $userExist['password']) {
             unset($userExist['password']);
             return array('status' => true, 'msg' => 'Login correcto', 'data' => $userExist);
@@ -36,10 +36,15 @@ class UsuarioController
     public function register()
     {
         $usuarioModel = new UsuarioModel();
+        $user = $usuarioModel->getUserbyCedula($_POST['identificacion']);
+        if ($user) {
+            return array('status' => false, 'msg' => 'La cedula ya se encuentra registrada');
+        }
         $user = $usuarioModel->getUserByEmail($_POST['email']);
         if ($user) {
             return array('status' => false, 'msg' => 'El correo electronico ya se encuentra registrado');
         }
+
         $hashedPassword = hash('sha256', $_POST['password']);
         $user = $usuarioModel->create($_POST['identificacion'], $_POST['nombre'], $_POST['segundo_nombre'], $_POST['apellido'], $_POST['segundo_apellido'], $_POST['telefono'], $_POST['email'], $hashedPassword);
         return array('status' => true, 'msg' => 'Usuario creado');
@@ -55,12 +60,12 @@ class UsuarioController
         return array('status' => false, 'msg' => "No hay usuario");
     }
 
-    public function getUserNoAsignado()
+    public function getUsersNoAsignado()
     {
         $usuarioModel = new UsuarioModel();
 
         try {
-            $usuario = $usuarioModel->getUserNoAsignado();
+            $usuario = $usuarioModel->getUsersNoAsignado();
             if ($usuario === null) {
                 return [];
             } else {
