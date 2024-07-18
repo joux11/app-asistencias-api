@@ -1,0 +1,4 @@
+# Ignorar archivos y directorios específicos de PHP
+/vendor/
+composer.lock
+config/serCred.json
