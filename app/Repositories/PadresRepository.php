@@ -24,8 +24,12 @@ class PadresRepository
     public function getNinosById($id)
     {
         $padre = $this->model->find($id);
-        $nino = $padre->ninos()->with('aula')->get()->toArray();
-        return $nino;
+        $ninos = $padre->ninos()->with('aula')->get()->map(function ($nino) {
+            $ninoArray = $nino->toArray();
+            unset($ninoArray['pivot']);
+            return $ninoArray;
+        });
+        return $ninos;
     }
 
     public function getByEmail($email)
