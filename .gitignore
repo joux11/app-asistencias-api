@@ -4,4 +4,3 @@ composer.lock
 config/serCred.json
 
 .env
-.env.example
