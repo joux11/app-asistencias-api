@@ -17,7 +17,7 @@ class RecoveryDatabase extends Database
     public function backupDatabase()
     {
         $this->backupDir = BACKUP_DIR ? BACKUP_DIR : '.';
-        $this->backupFile = 'backupBaseDatos-' . DB_NAME . '-' . date("Ymd_His", time()) . '.sql';
+        $this->backupFile = 'backupBaseDatos-' . env('DB_DATABASE') . '-' . date("Ymd_His", time()) . '.sql';
 
         try {
             $tables = array();
@@ -30,8 +30,8 @@ class RecoveryDatabase extends Database
                 $tables[] = $row[0];
             }
 
-            $sql = 'CREATE DATABASE IF NOT EXISTS `' . DB_NAME . '`' . ";\n\n";
-            $sql .= 'USE `' . DB_NAME . "`;\n\n";
+            $sql = 'CREATE DATABASE IF NOT EXISTS `' .  env('DB_DATABASE') . '`' . ";\n\n";
+            $sql .= 'USE `' .  env('DB_DATABASE') . "`;\n\n";
 
             if ($this->disableForeignKeyChecks === true) {
                 $sql .= "SET foreign_key_checks = 0;\n\n";
