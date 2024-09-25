@@ -14,7 +14,7 @@ class AWSService
     {
 
         $this->snsClient = new SnsClient([
-            'region' => 'us-east-1',
+            'region' => env('AWS_REGION'),
             'credentials' => [
                 'key' => env('AWS_ACCESS_KEY_ID'),
                 'secret' => env('AWS_SECRET_ACCESS_KEY'),
