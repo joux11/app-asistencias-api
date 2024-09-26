@@ -11,35 +11,38 @@ class UsuarioController
             return array('status' => false, 'msg' => 'La password es requerida');
         }
 
-
-        $usuarioModel = new UsuarioModel();
-        $hashedPassword = hash('sha256', $_POST['password']);
-        $user = $usuarioModel->getUserByEmail($_POST['email']);
-        if (empty($user)) {
-            return array('status' => false, 'msg' => 'El usuario no existe');
-        }
-        if ($user['estado'] == "0") {
-            return array('status' => false, 'msg' => 'El usuario no esta activo');
-        }
-
-        if ($user['rol_id'] == "1") {
-            if ($hashedPassword == $user['password']) {
-                unset($user['password']);
-                return array('status' => true, 'msg' => 'Login correcto', 'data' => $user);
+        try {
+            $usuarioModel = new UsuarioModel();
+            $hashedPassword = hash('sha256', $_POST['password']);
+            $user = $usuarioModel->getUserByEmail($_POST['email']);
+            if (empty($user)) {
+                return array('status' => false, 'msg' => 'El usuario no existe');
             }
+            if ($user['estado'] == "0") {
+                return array('status' => false, 'msg' => 'El usuario no esta activo');
+            }
+
+            if ($user['rol_id'] == "1") {
+                if ($hashedPassword == $user['password']) {
+                    unset($user['password']);
+                    return array('status' => true, 'msg' => 'Login correcto', 'data' => $user);
+                }
+                return array('status' => false, 'msg' => 'Usuario/Passworrd incorrecto');
+            }
+
+            if (!empty($usuarioModel->getUserNoAsignadoById($user['id']))) {
+                return array('status' => false, 'msg' => 'El usuario no ha sido asignado a ninguna aula');
+            }
+            $userExist = $usuarioModel->getById($user['id']);
+            if ($userExist && $hashedPassword == $userExist['password']) {
+                unset($userExist['password']);
+                return array('status' => true, 'msg' => 'Login correcto', 'data' => $userExist);
+            }
+
             return array('status' => false, 'msg' => 'Usuario/Passworrd incorrecto');
+        } catch (Exception $e) {
+            return array('status' => false, 'msg' => 'Error de sistema: ' . $e->getMessage());
         }
-
-        if (!empty($usuarioModel->getUserNoAsignadoById($user['id']))) {
-            return array('status' => false, 'msg' => 'El usuario no ha sido asignado a ninguna aula');
-        }
-        $userExist = $usuarioModel->getById($user['id']);
-        if ($userExist && $hashedPassword == $userExist['password']) {
-            unset($userExist['password']);
-            return array('status' => true, 'msg' => 'Login correcto', 'data' => $userExist);
-        }
-
-        return array('status' => false, 'msg' => 'Usuario/Passworrd incorrecto');
     }
 
     public function register()
