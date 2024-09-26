@@ -31,7 +31,8 @@ class AsistenciaNinosController
                 return ['status' => false, "msg" => 'Niño no asignado a un Padre/Representante'];
             }
             $nombreNino = $nino->primer_nombre . ' ' . $nino->segundo_nombre . ' ' . $nino->primer_apellido . ' ' . $nino->segundo_apellido;
-            $telefonoPadre = $nino->padres()->first()->celular;
+            $telefonoPadre = $nino->padres()->first()->numero_celular;
+            if ($telefonoPadre == null) return array('status' => false, 'msg' => 'El padre no tiene numero celular registrado: ');
             $res = $this->awsService->sendSMS($telefonoPadre, $nombreNino);
 
             $this->asistenciaNinosRepository->create([
@@ -42,8 +43,8 @@ class AsistenciaNinosController
                 'niño_id' => $_POST['niño_id'],
             ]);
 
-            //return array('status' => true, 'msg' => "Asistencia registrada correctamente y {$res}");
-            return $padres;
+            return array('status' => true, 'msg' => "Asistencia registrada correctamente y {$res}");
+            //return $padres;
         } catch (Exception $e) {
             return array('status' => false, 'msg' => $e->getMessage());
         }

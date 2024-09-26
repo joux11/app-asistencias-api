@@ -2,6 +2,7 @@
 
 namespace app\Services;
 
+use Aws\Exception\AwsException;
 use Aws\Sns\SnsClient;
 use Exception;
 
@@ -14,6 +15,7 @@ class AWSService
     {
 
         $this->snsClient = new SnsClient([
+            'version' => '2010-03-31',
             'region' => env('AWS_REGION'),
             'credentials' => [
                 'key' => env('AWS_ACCESS_KEY_ID'),
@@ -33,15 +35,15 @@ class AWSService
                 'Message' => $mensaje,
                 'PhoneNumber' => $numberCellphone,
             ]);
-            return $result;
-        } catch (Exception $e) {
-            throw new Exception($e->getMessage());
+            return $result['MessageId'];
+        } catch (AwsException $e) {
+            throw new Exception("Error aws: " . $e->getMessage());
         }
     }
 
     public function FormatNumber($number)
     {
-        if (strpos($number, '0') !== 0) {
+        if (strpos($number, '0') == 0) {
             $cellphoneNumberNoZero = substr($number, 1, strlen($number) - 1);
             return "+593{$cellphoneNumberNoZero}";
         } else {
