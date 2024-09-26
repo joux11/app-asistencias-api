@@ -91,10 +91,9 @@ class UsuarioModel extends Database
             $pdo = null;
             return $res;
         } catch (PDOException $e) {
-            error_log("Database error: " . $e->getMessage());
-            return null;
+            throw new Exception("PDO Exception: " . $e->getMessage());
         } catch (Exception $e) {
-            error_log("Error: " . $e->getMessage());
+            throw new Exception("Error: " . $e->getMessage());
             return null;
         }
     }
